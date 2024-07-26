@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-ix!t%%twm^^tl%2!2tz(qp8*0gry=99zesx%!hfa#jypm!hl@+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -83,7 +83,7 @@ DATABASES = {
         'NAME': 'challengedb',
         'USER': 'fiap',
         'PASSWORD': 'fiap',
-        'HOST': 'db_service',
+        'HOST': 'db',
         'PORT': '5432'
     }
 }
