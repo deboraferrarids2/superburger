@@ -2,7 +2,7 @@
 
 This is a Django REST Framework project that runs in Docker.
 
-## Burgerstore operation
+## Superburger operation
 
 A functional backend service for customers and store staff can create and manage orders 
 

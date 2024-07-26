@@ -29,8 +29,8 @@ services:
     networks:
       - project-network
     restart: always
-    command: bash -c "sleep 10 && python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:5000" 
-    #command: bash -c "sleep 10 && python manage.py makemigrations && python manage.py migrate && python manage.py create_superuser && python manage.py populate_products && python manage.py runserver 0.0.0.0:5000" 
+    #command: bash -c "sleep 10 && python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:5000" 
+    command: bash -c "sleep 10 && python manage.py makemigrations && python manage.py migrate && python manage.py create_superuser && python manage.py populate_products && python manage.py runserver 0.0.0.0:5000" 
     #entrypoint: ["bash", "/usr/src/app/entrypoint.sh"]
 volumes:
   data:

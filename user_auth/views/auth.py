@@ -10,7 +10,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from burgerstore.settings import *
+from superburger.settings import *
 from django.contrib.auth.models import User
 from user_auth.models import BaseUser
 from user_auth.serializers.auth import UserSerializer, UserGETSerializer, LoginSerializer

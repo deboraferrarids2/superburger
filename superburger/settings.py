@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'user_auth',
+    'order',
+    'payment',
 ]
 
 MIDDLEWARE = [
@@ -133,3 +135,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+MERCADO_PAGO_ACCESS_TOKEN = 'TEST-999136754320876-012913-ceaa6b515d1ab0c7e43a8b618537872a-407707350'

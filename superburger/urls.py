@@ -15,8 +15,36 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include, re_path
+from rest_framework import routers
+from user_auth.views import UserViewSet, signin
+from order.views import ProductViewSet, OrderViewSet, OrderItemsViewSet
+from payment.views import CheckoutViewset, TransactionWebhookView, TransactionWebhookView
+
+
+
+router = routers.DefaultRouter()
+
+router.register('user', UserViewSet, basename='user')
+router.register('products', ProductViewSet)
+router.register('order', OrderViewSet, basename='order')
+router.register('items', OrderItemsViewSet)
+router.register('payment', CheckoutViewset)
+
+
 
 urlpatterns = [
+    path('', include(router.urls)),
     path('admin/', admin.site.urls),
+    path('signin/', signin, name='signin'),
+    #path('user/<int:pk>/delete/', delete_user, name='delete_user'),
+    path('webhook/', TransactionWebhookView.as_view(), name='webhook'),
+    path('user/', UserViewSet.create, name='user'),
+    path('order_create/', OrderViewSet.create, name='order_create'),
+    path('order_retrieve/<int:pk>/', OrderViewSet.retrieve, name='order_retrieve'),
+    path('items_create/', OrderItemsViewSet.create, name='items_create'),
+    path('webhook/', TransactionWebhookView.as_view(), name='transaction-webhook'),
+
+
 ]
+
