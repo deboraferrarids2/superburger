@@ -75,9 +75,15 @@ class OrderViewSet(MixedPermissionModelViewSet):
             return Response({'message': 'Esse pedido não pode ser finalizado.'}, status=status.HTTP_400_BAD_REQUEST)
 
         
-    def get_queryset(self):
+    def get_queryset(self, request):
         use_case = ListOrdersUseCase()
         return use_case.execute(self.request)
+    
+    def list(self, request, *args, **kwargs):
+        use_case = ListOrdersUseCase()
+        orders = use_case.execute(request)
+        serializer = self.get_serializer(orders, many=True)
+        return Response(serializer.data)
 
     def retrieve(self, request, pk=None, *args, **kwargs):
         user = request.user

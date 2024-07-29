@@ -57,8 +57,10 @@ class ProcessWebhookUseCase:
 
                 # Update the associated order status to "Recebido"
                 order = transaction.order
-                order.status = 'Recebido'
+                logger.info(f'Updating status para order: {order}')
+                order.status = 'recebido'
                 order.save()
+                logger.info(f'Updated order to recebido')
                 return True  # Indicate that the error handling succeeded
             except Transaction.DoesNotExist:
                 logger.error(f'Payment with external_id {resource_id} does not exist')
