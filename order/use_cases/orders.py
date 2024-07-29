@@ -17,9 +17,6 @@ class ListOrdersUseCase:
         else:
             queryset = queryset.filter(session_token=request.query_params.get('session'))
 
-        if status:
-            queryset = queryset.filter(status=status)
-
         # Apply custom ordering
         queryset = self.apply_custom_ordering(queryset)
 
@@ -35,5 +32,8 @@ class ListOrdersUseCase:
                 output_field=IntegerField(),
             )
         ).filter(custom_order__lte=2)  # Keep only objects with status 0, 1, or 2
+        
+        # Order by custom_order
+        queryset = queryset.order_by('custom_order')
 
         return queryset

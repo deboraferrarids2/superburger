@@ -26,10 +26,10 @@ spec:
         - mountPath: /var/lib/postgresql/data
           name: postgres-data
       - name: app
-        image: deboraferrarids2/challenge_web:v6.0
+        image: deboraferrarids2/challenge_web:v6.3
         ports:
         - containerPort: 5000
-        command: ["/bin/sh", "-c", "sleep 10 && python /usr/src/app/manage.py makemigrations && python /usr/src/app/manage.py migrate && python /usr/src/app/manage.py populate_products && python /usr/src/app/manage.py runserver 0.0.0.0:5000"]
+        command: ["/bin/sh", "-c", "sleep 10 && python /usr/src/app/manage.py makemigrations && python /usr/src/app/manage.py migrate && python /usr/src/app/manage.py populate_products && python /usr/src/app/manage.py create_superuser && python /usr/src/app/manage.py runserver 0.0.0.0:5000"]
         livenessProbe:
           httpGet:
             path: /products/
