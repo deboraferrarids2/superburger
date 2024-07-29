@@ -12,7 +12,7 @@ Ao rodar o projeto é criado um super user admin@superburger.com senha:admin . C
 
 Link para acesso ao swagger (insomnia json) https://drive.google.com/file/d/1CNN9pYREDl0m1tV4T4-ThIqfEEJs-Wck/view?usp=sharing
 
-Link do vídeo da entrega fase 2: https://drive.google.com/file/d/1njQoZLknU222sHxNQZtK7fOI51lAKBau/view?usp=sharing
+Link do vídeo da entrega fase 2: https://drive.google.com/file/d/1njQoZLknU222sHxNQZtK7fOI51lAKBau/view?usp=sharing ou no youtube https://youtu.be/V9Y6jJc4-eI
 
 Sobre arquitetura hexagonal: No contexto django as views são ports, as serializers são os adapters e as models definem sim alguns padroes de como salvar os dados no banco, mas são questoes, por exemplo, como limpar caracteres speciais de um cpf, nao regras de negocios. Como nas serializers (adapters)são feitas as adaptacoes de formato das dependencias, doi adotada a sugestao das aulas e utilizados use_cases para detalhar casos de uso. Apesar de nomenclaturas distintas e uso de framework, tudo que fiz ali de estrutura de pedidos, produtos, checkout, foi tudo escrito do zero e dentro dos padores, apenas utilizando outros nomes.
 
