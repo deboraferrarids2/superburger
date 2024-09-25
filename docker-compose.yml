@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   db:
-    image: postgres
+    image: postgres:15
     container_name: db
     environment:
       - POSTGRES_DB=challengedb
@@ -16,8 +16,8 @@ services:
       - project-network
 
   web:
-    #build: .
-    image: deboraferrarids2/challenge_web:v6.3
+    build: .
+    #image: deboraferrarids2/challenge_web:v7.0
     container_name: app
     volumes:
       - .:/usr/src/app
