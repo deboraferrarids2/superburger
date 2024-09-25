@@ -18,6 +18,7 @@ services:
   web:
     build: .
     #image: deboraferrarids2/challenge_web:v7.0
+    image: deboraferrarids2/challenge_web:latest
     container_name: app
     volumes:
       - .:/usr/src/app
