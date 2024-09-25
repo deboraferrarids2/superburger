@@ -21,6 +21,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
 
       - name: Build Docker Image
         run: |
@@ -47,3 +48,4 @@ jobs:
           task-definition: apieventos
           container-name: app
           image: 778862303728.dkr.ecr.us-east-1.amazonaws.com/apieventos:latest
+          aws-region: us-east-1
