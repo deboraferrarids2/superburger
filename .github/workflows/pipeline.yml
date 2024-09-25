@@ -37,10 +37,6 @@ jobs:
         run: |
           docker-compose build
 
-      - name: List Docker Images
-        run: |
-          docker images
-
       - name: Tag Docker Image
         run: |
           docker tag deboraferrarids2/challenge_web:latest 778862303728.dkr.ecr.us-east-1.amazonaws.com/apieventos:latest
@@ -48,6 +44,18 @@ jobs:
       - name: Push Docker Image to ECR
         run: |
           docker push 778862303728.dkr.ecr.us-east-1.amazonaws.com/apieventos:latest
+
+      - name: Download current task definition
+        run: |
+          aws ecs describe-task-definition --task-definition apieventos --query taskDefinition > task-definition.json
+
+      - name: Fill in new image ID in task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: app
+          image: 778862303728.dkr.ecr.us-east-1.amazonaws.com/apieventos:latest
 
   deploy:
     runs-on: ubuntu-latest  
@@ -61,11 +69,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Deploy to ECS
-        uses: aws-actions/ecs-deploy-task-definition@v1 
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1 
         with:
-          task-definition: apieventos
-          cluster: events-cluster-ec2
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
           service: events
-          container-name: app
-          image: 778862303728.dkr.ecr.us-east-1.amazonaws.com/apieventos:latest
+          cluster: events-cluster-ec2
