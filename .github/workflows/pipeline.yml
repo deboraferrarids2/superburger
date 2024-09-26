@@ -47,7 +47,7 @@ jobs:
 
       - name: Download Current Task Definition
         run: |
-          aws ecs describe-task-definition --task-definition your-task-family --query taskDefinition --output json > task-definition.json
+          aws ecs describe-task-definition --task-definition fargate-task-definition --query taskDefinition --output json > task-definition.json
 
       - name: Update Container Image in Task Definition
         id: update-image
