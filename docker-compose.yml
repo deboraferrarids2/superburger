@@ -7,7 +7,7 @@ services:
     environment:
       - POSTGRES_DB=challengedb
       - POSTGRES_USER=fiap
-      - POSTGRES_PASSWORD=fiap
+      - POSTGRES_PASSWORD=fiapfiap
     volumes:
       - data:/var/lib/postgresql/data
     ports:
@@ -24,14 +24,14 @@ services:
       - .:/usr/src/app
       - ./logs:/usr/src/app/logs
     ports:
-      - "5000:5000"
+      - "3000:3000"
     depends_on:
       - db
     networks:
       - project-network
     restart: always
-    #command: bash -c "sleep 10 && python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:5000" 
-    command: bash -c "sleep 10 && python manage.py makemigrations && python manage.py migrate && python manage.py create_superuser && python manage.py populate_products && python manage.py runserver 0.0.0.0:5000" 
+    #command: bash -c "sleep 10 && python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:3000" 
+    command: bash -c "sleep 10 && python manage.py makemigrations && python manage.py migrate && python manage.py create_superuser && python manage.py populate_products && python manage.py runserver 0.0.0.0:3000" 
     #entrypoint: ["bash", "/usr/src/app/entrypoint.sh"]
 volumes:
   data:

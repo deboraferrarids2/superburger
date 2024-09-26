@@ -28,12 +28,12 @@ spec:
       - name: app
         image: deboraferrarids2/challenge_web:v6.3
         ports:
-        - containerPort: 5000
-        command: ["/bin/sh", "-c", "sleep 10 && python /usr/src/app/manage.py makemigrations && python /usr/src/app/manage.py migrate && python /usr/src/app/manage.py populate_products && python /usr/src/app/manage.py create_superuser && python /usr/src/app/manage.py runserver 0.0.0.0:5000"]
+        - containerPort: 3000
+        command: ["/bin/sh", "-c", "sleep 10 && python /usr/src/app/manage.py makemigrations && python /usr/src/app/manage.py migrate && python /usr/src/app/manage.py populate_products && python /usr/src/app/manage.py create_superuser && python /usr/src/app/manage.py runserver 0.0.0.0:3000"]
         livenessProbe:
           httpGet:
             path: /products/
-            port: 5000
+            port: 3000
           initialDelaySeconds: 60
           periodSeconds: 30
       volumes:

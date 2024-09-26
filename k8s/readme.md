@@ -57,7 +57,7 @@ To access the Django application, you need to forward the port from the Kubernet
 
 ~ kubectl port-forward svc/django-service 8080:80
 
-You can now access the application in your browser at http://localhost:5000.
+You can now access the application in your browser at http://localhost:3000.
 Stopping the Cluster
 
 
