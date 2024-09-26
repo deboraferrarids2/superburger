@@ -58,9 +58,14 @@ jobs:
           FAMILY=$(echo "$TASK_DEF_JSON" | jq -r '.family')
           CONTAINER_DEFINITIONS=$(echo "$TASK_DEF_JSON" | jq --arg IMAGE "$NEW_IMAGE" '(.containerDefinitions | map(if .name == "devcontainer" then .image = $IMAGE | .memory = 512 | .memoryReservation = 256 else . end))')
 
+          CPU=256
+          MEMORY=512 
+
           UPDATED_TASK_DEF_JSON=$(jq -n \
             --arg family "$FAMILY" \
             --argjson containerDefinitions "$CONTAINER_DEFINITIONS" \
+            --argjson cpu "$CPU" \
+            --argjson memory "$MEMORY" \
             '{
               family: $family,
               containerDefinitions: $containerDefinitions
