@@ -82,7 +82,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'challengedb',
         'USER': 'fiap',
-        'PASSWORD': 'fiap',
+        'PASSWORD': 'fiapfiap',
         'HOST': 'db',
         'PORT': '5432'
     }

@@ -23,7 +23,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Install Docker Compose
+      - name: Install Docker Compose and JQ
         run: |
           sudo apt-get update
           sudo apt-get install -y docker-compose jq
@@ -47,7 +47,7 @@ jobs:
 
       - name: Download Current Task Definition
         run: |
-          aws ecs describe-task-definition --task-definition apieventos --query taskDefinition --output json > task-definition.json
+          aws ecs describe-task-definition --task-definition devtaskdeinition --query taskDefinition --output json > task-definition.json
 
       - name: Update Container Image in Task Definition
         id: update-image
@@ -63,3 +63,7 @@ jobs:
       - name: Deploy Updated Task Definition
         run: |
           aws ecs update-service --cluster events-cluster-ec2 --service events --force-new-deployment --task-definition "${{ env.task-definition-arn }}"
+
+      - name: Run Migrations
+        run: |
+          aws ecs run-task --cluster events-cluster-ec2 --launch-type FARGATE --task-definition "${{ env.task-definition-arn }}" --overrides '{ "containerOverrides": [{ "name": "migration", "command": ["bash", "-c", "python manage.py makemigrations && python manage.py migrate"]}] } }'
