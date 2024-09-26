@@ -59,14 +59,14 @@ jobs:
           CONTAINER_DEFINITIONS=$(echo "$TASK_DEF_JSON" | jq --arg IMAGE "$NEW_IMAGE" '
             .containerDefinitions |= map(if .name == "devcontainer" then .image = $IMAGE else . end)')
 
-          CPU=256
-          MEMORY=512 
+          CPU="256"  # Mude para string
+          MEMORY="512"  # Mude para string
 
           UPDATED_TASK_DEF_JSON=$(jq -n \
             --arg family "$FAMILY" \
             --argjson containerDefinitions "$CONTAINER_DEFINITIONS" \
-            --argjson cpu "$CPU" \
-            --argjson memory "$MEMORY" \
+            --arg cpu "$CPU" \
+            --arg memory "$MEMORY" \
             '{
               family: $family,
               requiresCompatibilities: ["FARGATE"],
@@ -77,6 +77,7 @@ jobs:
 
           NEW_TASK_DEFINITION=$(aws ecs register-task-definition --cli-input-json "$UPDATED_TASK_DEF_JSON")
           echo "task-definition-arn=$(echo $NEW_TASK_DEFINITION | jq -r '.taskDefinition.taskDefinitionArn')" >> $GITHUB_ENV
+
 
       - name: Deploy Updated Task Definition
         run: |
