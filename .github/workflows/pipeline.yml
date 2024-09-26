@@ -49,31 +49,37 @@ jobs:
         run: |
           aws ecs describe-task-definition --task-definition fargate-task-definition --query taskDefinition --output json > task-definition.json
 
-      - name: Update Container Image in Task Definition
-        id: update-image
+      - name: Update ECS Task Definition
+        env:
+          TASK_FAMILY: "fargate-task-definition"
+          AWS_DOCKER_IMAGE: "778862303728.dkr.ecr.us-east-1.amazonaws.com/apieventos"
+          VERSAO: "latest"
+          ECS_CLUSTER: "devcluster"
+          SERVICE_NAME: "devclusterservice"
         run: |
-          NEW_IMAGE="778862303728.dkr.ecr.us-east-1.amazonaws.com/apieventos:latest"
-          TASK_DEF_JSON=$(cat task-definition.json)
+          TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition "${TASK_FAMILY}")
 
-          FAMILY=$(echo "$TASK_DEF_JSON" | jq -r '.family')
-          CONTAINER_DEFINITIONS=$(echo "$TASK_DEF_JSON" | jq --arg IMAGE "$NEW_IMAGE" '
-            .containerDefinitions |= map(if .name == "devcontainer" then .image = $IMAGE else . end)')
+          NEW_TASK_DEFINITION=$(echo "$TASK_DEFINITION" | jq --arg IMAGE "${AWS_DOCKER_IMAGE}:${VERSAO}" '
+            .taskDefinition | 
+            .containerDefinitions[0].image = $IMAGE | 
+            del(.taskDefinitionArn) | 
+            del(.revision) | 
+            del(.status) | 
+            del(.requiresAttributes) | 
+            del(.compatibilities) |  
+            del(.registeredAt) |  
+            del(.registeredBy)')
 
-          CPU=256
-          MEMORY=512
-          
-          UPDATED_TASK_DEF_JSON=$(jq -n \
-            --arg family "$FAMILY" \
-            --argjson containerDefinitions "$CONTAINER_DEFINITIONS")
+          NEW_TASK_INFO=$(aws ecs register-task-definition --cli-input-json "$NEW_TASK_DEFINITION")
 
-          NEW_TASK_DEFINITION=$(aws ecs register-task-definition --cli-input-json "$UPDATED_TASK_DEF_JSON")
-          echo "task-definition-arn=$(echo $NEW_TASK_DEFINITION | jq -r '.taskDefinition.taskDefinitionArn')" >> $GITHUB_ENV
+          NEW_REVISION=$(echo "$NEW_TASK_INFO" | jq '.taskDefinition.revision')
 
+          # Atualiza o serviço com a nova definição de tarefa
+          aws ecs update-service --cluster "${ECS_CLUSTER}" --service "${SERVICE_NAME}" --task-definition "${TASK_FAMILY}:${NEW_REVISION}"
 
-      - name: Deploy Updated Task Definition
-        run: |
-          aws ecs update-service --cluster devcluster --service devclusterservice --force-new-deployment --task-definition "${{ env.task-definition-arn }}"
+          # Salva o ARN da nova tarefa para uso posterior
+          echo "task-definition-arn=${TASK_FAMILY}:${NEW_REVISION}" >> $GITHUB_ENV
 
       - name: Run Migrations
         run: |
-          aws ecs run-task --cluster devcluster --launch-type FARGATE --task-definition "${{ env.task-definition-arn }}" --overrides '{ "containerOverrides": [{ "name": "migration", "command": ["bash", "-c", "python manage.py makemigrations && python manage.py migrate"]}] } }'
+          aws ecs run-task --cluster devcluster --launch-type FARGATE --task-definition "${{ env.task-definition-arn }}" --overrides '{ "containerOverrides": [{ "name": "devcontainer", "command": ["bash", "-c", "python manage.py makemigrations && python manage.py migrate"]}] } }'
