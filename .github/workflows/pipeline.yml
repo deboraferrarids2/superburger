@@ -58,7 +58,6 @@ jobs:
           FAMILY=$(echo "$TASK_DEF_JSON" | jq -r '.family')
           CONTAINER_DEFINITIONS=$(echo "$TASK_DEF_JSON" | jq --arg IMAGE "$NEW_IMAGE" '(.containerDefinitions | map(if .name == "devcontainer" then .image = $IMAGE | .memory = 512 | .memoryReservation = 256 else . end))')
 
-          # Defina os valores de CPU e memória como inteiros
           CPU=256 # Defina um valor apropriado para o seu caso
           MEMORY=512 # Defina um valor apropriado para o seu caso
 
@@ -74,7 +73,6 @@ jobs:
               containerDefinitions: $containerDefinitions
             }')
 
-          # Registre a nova definição de tarefa no ECS
           NEW_TASK_DEFINITION=$(aws ecs register-task-definition --cli-input-json "$UPDATED_TASK_DEF_JSON")
           echo "task-definition-arn=$(echo $NEW_TASK_DEFINITION | jq -r '.taskDefinition.taskDefinitionArn')" >> $GITHUB_ENV
 
