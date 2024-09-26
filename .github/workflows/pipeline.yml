@@ -59,9 +59,9 @@ jobs:
           CONTAINER_DEFINITIONS=$(echo "$TASK_DEF_JSON" | jq --arg IMAGE "$NEW_IMAGE" '
             .containerDefinitions |= map(if .name == "devcontainer" then .image = $IMAGE else . end)')
 
-          CPU="256"  # Mude para string
-          MEMORY="512"  # Mude para string
-
+          CPU=256
+          MEMORY=512
+          
           UPDATED_TASK_DEF_JSON=$(jq -n \
             --arg family "$FAMILY" \
             --argjson containerDefinitions "$CONTAINER_DEFINITIONS" \
