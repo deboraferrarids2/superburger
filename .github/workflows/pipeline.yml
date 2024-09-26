@@ -64,16 +64,7 @@ jobs:
           
           UPDATED_TASK_DEF_JSON=$(jq -n \
             --arg family "$FAMILY" \
-            --argjson containerDefinitions "$CONTAINER_DEFINITIONS" \
-            --arg cpu "$CPU" \
-            --arg memory "$MEMORY" \
-            '{
-              family: $family,
-              requiresCompatibilities: ["FARGATE"],
-              cpu: $cpu,
-              memory: $memory,
-              containerDefinitions: $containerDefinitions
-            }')
+            --argjson containerDefinitions "$CONTAINER_DEFINITIONS")
 
           NEW_TASK_DEFINITION=$(aws ecs register-task-definition --cli-input-json "$UPDATED_TASK_DEF_JSON")
           echo "task-definition-arn=$(echo $NEW_TASK_DEFINITION | jq -r '.taskDefinition.taskDefinitionArn')" >> $GITHUB_ENV
