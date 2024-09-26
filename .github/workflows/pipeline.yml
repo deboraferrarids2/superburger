@@ -82,4 +82,6 @@ jobs:
 
       - name: Run Migrations
         run: |
-          aws ecs run-task --cluster devcluster --launch-type FARGATE --task-definition "${{ env.task-definition-arn }}" --overrides '{"containerOverrides": [{"name": "devcontainer", "command": ["bash", "-c", "python manage.py makemigrations && python manage.py migrate"]}]} }'
+          OVERRIDES='{"containerOverrides":[{"name":"devcontainer","command":["bash","-c","python manage.py makemigrations && python manage.py migrate"]}]}'
+          echo "$OVERRIDES"  # Para debugar a string JSON
+          aws ecs run-task --cluster devcluster --launch-type FARGATE --task-definition "fargate-task-definition:6" --overrides "$OVERRIDES"
