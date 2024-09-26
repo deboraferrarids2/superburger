@@ -56,7 +56,8 @@ jobs:
           TASK_DEF_JSON=$(cat task-definition.json)
 
           FAMILY=$(echo "$TASK_DEF_JSON" | jq -r '.family')
-          CONTAINER_DEFINITIONS=$(echo "$TASK_DEF_JSON" | jq --arg IMAGE "$NEW_IMAGE" '(.containerDefinitions | map(if .name == "devcontainer" then .image = $IMAGE | .memory = 512 | .memoryReservation = 256 else . end))')
+          CONTAINER_DEFINITIONS=$(echo "$TASK_DEF_JSON" | jq --arg IMAGE "$NEW_IMAGE" '
+            .containerDefinitions |= map(if .name == "devcontainer" then .image = $IMAGE else . end)')
 
           CPU=256
           MEMORY=512 
@@ -68,12 +69,14 @@ jobs:
             --argjson memory "$MEMORY" \
             '{
               family: $family,
+              requiresCompatibilities: ["FARGATE"],
+              cpu: $cpu,
+              memory: $memory,
               containerDefinitions: $containerDefinitions
             }')
 
           NEW_TASK_DEFINITION=$(aws ecs register-task-definition --cli-input-json "$UPDATED_TASK_DEF_JSON")
           echo "task-definition-arn=$(echo $NEW_TASK_DEFINITION | jq -r '.taskDefinition.taskDefinitionArn')" >> $GITHUB_ENV
-
 
       - name: Deploy Updated Task Definition
         run: |
