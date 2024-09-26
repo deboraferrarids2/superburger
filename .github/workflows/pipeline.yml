@@ -55,7 +55,7 @@ jobs:
           NEW_IMAGE="778862303728.dkr.ecr.us-east-1.amazonaws.com/apieventos:latest"
           TASK_DEF_JSON=$(cat task-definition.json)
           
-          UPDATED_TASK_DEF_JSON=$(echo "$TASK_DEF_JSON" | jq --arg IMAGE "$NEW_IMAGE" 'del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy) | .containerDefinitions[0].image = $IMAGE')
+          UPDATED_TASK_DEF_JSON=$(echo "$TASK_DEF_JSON" | jq --arg IMAGE "$NEW_IMAGE" 'del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy) | .containerDefinitions[] | select(.name=="devcontainer").image = $IMAGE | .')
           
           NEW_TASK_DEFINITION=$(aws ecs register-task-definition --cli-input-json "$UPDATED_TASK_DEF_JSON")
           echo "task-definition-arn=$(echo $NEW_TASK_DEFINITION | jq -r '.taskDefinition.taskDefinitionArn')" >> $GITHUB_ENV
