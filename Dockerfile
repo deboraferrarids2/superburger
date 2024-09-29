@@ -23,7 +23,7 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-EXPOSE 3000
+EXPOSE 5000
 
 # Run migrations
 #RUN python manage.py makemigrations
@@ -32,4 +32,4 @@ EXPOSE 3000
 # Run the create_superuser.py script to create the superuser
 #RUN python cmd_create_superuser.py
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:3000"]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:5000"]

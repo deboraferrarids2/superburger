@@ -83,7 +83,7 @@ DATABASES = {
         'NAME': 'challengedb',
         'USER': 'fiap',
         'PASSWORD': 'fiapfiap',
-        'HOST': 'db',
+        'HOST': 'dbinstance.czg4uw2c8vlr.us-east-1.rds.amazonaws.com',
         'PORT': '5432'
     }
 }

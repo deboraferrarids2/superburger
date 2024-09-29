@@ -3,5 +3,7 @@ kind: ConfigMap
 metadata:
   name: db-config
 data:
-  POSTGRES_DB: "challengedb"
+  POSTGRES_DB: challengedb
+  POSTGRES_HOST: challengedb.czg4uw2c8vlr.us-east-1.rds.amazonaws.com
+  POSTGRES_PORT: "5432"
   POSTGRES_USER: "fiap"
