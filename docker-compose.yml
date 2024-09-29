@@ -18,7 +18,7 @@ services:
   web:
     build: .
     #image: deboraferrarids2/challenge_web:v7.0
-    image: deboraferrarids2/challenge_web:latest
+    image: 778862303728.dkr.ecr.us-east-1.amazonaws.com/apieventos:latest
     container_name: app
     volumes:
       - .:/usr/src/app
