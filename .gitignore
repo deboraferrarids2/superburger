@@ -42,3 +42,9 @@ __pycache__/
 
 # Ignorar o binário do Minikube
 minikube-linux-amd64
+
+.terraform
+*.tfstate
+*.tfstate.backup
+.terraform/*.tf
+.terraform/*_x*
