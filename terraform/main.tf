@@ -81,18 +81,42 @@ resource "aws_iam_role" "eks_role_v2" {
         Effect = "Allow"
         Principal = {
           "Service": [
-                    "ec2.amazonaws.com",
-                    "eks.amazonaws.com"
-                ]
+            "ec2.amazonaws.com",
+            "eks.amazonaws.com"
+          ]
         }
       }
     ]
   })
 }
 
-resource "aws_iam_role_policy_attachment" "eks_policy_attach_v2" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+resource "aws_iam_role_policy_attachment" "eks_ecr_access_policy_attach_v2" {
+  policy_arn = "arn:aws:iam::778862303728:policy/ecr-access"
   role       = aws_iam_role.eks_role_v2.name
+}
+
+
+# Criar o IAM role para o CNI
+resource "aws_iam_role" "eks_cni_role_v2" {
+  name = "eks-cni-role-v2"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole",
+        Effect = "Allow",
+        Principal = {
+          Service = "eks.amazonaws.com" 
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "cni_policy_attach_v2" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+  role       = aws_iam_role.eks_cni_role_v2.name
 }
 
 # Criar o cluster EKS
@@ -107,7 +131,7 @@ resource "aws_eks_cluster" "eks_v2" {
     ]
   }
 
-  depends_on = [aws_iam_role_policy_attachment.eks_policy_attach_v2]
+  depends_on = [aws_iam_role_policy_attachment.fargate_policy_attach_v2]
 }
 
 # Criar o IAM role para o Fargate
@@ -122,9 +146,9 @@ resource "aws_iam_role" "eks_fargate_role_v2" {
         Effect = "Allow",
         Principal = {
           Service = "eks-fargate-pods.amazonaws.com"  # Service Principal para o Fargate
-        },
-      },
-    ],
+        }
+      }
+    ]
   })
 }
 
@@ -199,7 +223,7 @@ resource "aws_db_instance" "db_v2" {
   vpc_security_group_ids = [aws_security_group.db_sg_v2.id]
   db_subnet_group_name   = aws_db_subnet_group.db_subnet_group_v2.name  # Vincular o subnet group
   skip_final_snapshot    = true
-  deletion_protection = true
+  deletion_protection     = true
 
   tags = {
     Name = "dbinstance-v2"
@@ -217,7 +241,7 @@ data "aws_ami" "eks_worker" {
 
   filter {
     name   = "architecture"
-    values = ["x86_64"] # Verifique a arquitetura correta
+    values = ["x86_64"]
   }
 
   filter {
@@ -226,10 +250,9 @@ data "aws_ami" "eks_worker" {
   }
 }
 
-
 resource "aws_launch_template" "node_group_template" {
   name_prefix   = "eks-node-template"
-  image_id      = data.aws_ami.eks_worker.id  # Substitua pela AMI correta
+  image_id      = data.aws_ami.eks_worker.id  
   instance_type = "t3.micro"
 
   # Adicionando o Security Group do Cluster EKS
@@ -245,35 +268,28 @@ resource "aws_launch_template" "node_group_template" {
 
 resource "aws_eks_node_group" "node_group_v2" {
   cluster_name    = aws_eks_cluster.eks_v2.name
-  node_group_name = "my-node-group-v2"
+  node_group_name = "node-group-v2"
   node_role_arn   = aws_iam_role.eks_role_v2.arn
-  subnet_ids      = [
-    aws_subnet.private_v2[0].id,
-    aws_subnet.private_v2[1].id,
-  ]
+  subnet_ids      = [aws_subnet.private_v2[0].id, aws_subnet.private_v2[1].id]
+
+  launch_template {
+    id      = aws_launch_template.node_group_template.id
+    version = "$Latest" 
+  }
 
   scaling_config {
     desired_size = 1
-    max_size     = 1
+    max_size     = 3
     min_size     = 1
-  }
-
-  # Usando o Launch Template que contém o Security Group
-  launch_template {
-    id      = aws_launch_template.node_group_template.id
-    version = "$Latest"  # ou especifique a versão, se preferir
-  }
-
-  tags = {
-    Name = "my-node-group-v2"
   }
 
   depends_on = [aws_eks_cluster.eks_v2]
 }
 
+
 resource "aws_eks_addon" "addons" {
   for_each          = { for addon in var.addons : addon.name => addon }
-  cluster_name      = aws_eks_cluster.eks_v2.name  # Atualize para o nome correto do cluster
+  cluster_name      = aws_eks_cluster.eks_v2.name  
   addon_name        = each.value.name
   addon_version     = each.value.version
   resolve_conflicts_on_create = "OVERWRITE"  # Durante a criação
